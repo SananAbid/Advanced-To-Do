@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do Advanced</title>
+    <style>
+        h1{font-size: 24px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 26.4px; } h3 { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 700; line-height: 15.4px; } p { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 14px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 20px; } blockquote { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 21px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 30px; } pre { font-family: Futura, "Trebuchet MS", Arial, sans-serif; font-size: 13px; font-style: normal; font-variant: normal; font-weight: 400; line-height: 18.5714px; }
+        body{
+            font-family:Futura, "Trebuchet MS", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: rgb(91, 87, 87);
+        }
+        
+        button{
+            font-family:Futura, "Trebuchet MS", Arial, sans-serif;
+            font-size: 15px;
+            background-color: rgba(20, 20, 20, 0.62);
+            text-align: center;
+            justify-content: center;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            border-radius: 15px;
+            color: rgb(117, 116, 116);
+        }
+        input{
+            font-family:Futura, "Trebuchet MS", Arial, sans-serif;
+            font-size: 15px;
+            background-color: rgba(20, 20, 20, 0.62);
+            text-align: center;
+            height: 25px;
+            width: 150px;
+            margin: 5px;
+            justify-content: center;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            border-radius: 15px;
+        }
+      
+        .tasks{
+            list-style-type: none;
+            display: flex;
+            font-family:Futura, "Trebuchet MS", Arial, sans-serif;
+            justify-content: space-between;
+            align-items: center;
+            padding:10px;
+            margin: 10px;
+            border-radius: 15px;
+            color: rgb(0, 0, 0);
+        }
+
+    </style>
+</head>
+<body>
+    <h1>To Do App Advanced</h1>
+    <div class="toDoMain">
+        <input type="text" id="searchBar" placeholder="Enter Task">
+        <button id="enterSearch">Enter</button>
+    </div>
+    
+    <script>
+        let mainToDo = document.querySelector(".toDoMain");
+        let searchBar = document.getElementById("searchBar");
+        let enterButton = document.getElementById("enterSearch");
+        let tasks = document.querySelector(".tasks");
+        let localList = [];
+
+        const getToDoList = ()=>{
+            return JSON.parse(localStorage.getItem("localList"));
+        }
+
+        localList = getToDoList() || [];
+
+        const displayToDoList = (curElem) =>{
+            const addedElem = document.createElement("div");
+            addedElem.classList.add("tasks");
+            addedElem.innerHTML = `<li>${curElem}</li>  <button class = "del">Delete</button>`;
+            mainToDo.append(addedElem);
+        } 
+
+        enterButton.addEventListener("click", ()=> {
+            let curTask = searchBar.value.trim();
+            if(curTask.trim() !== "" && !localList.includes(searchBar.value)){
+            
+            localList.push(curTask);
+            localList = [...new Set(localList)];
+            localStorage.setItem("localList", JSON.stringify(localList));
+
+            const addedElem = document.createElement("div");
+            addedElem.classList.add("tasks");
+            addedElem.innerHTML = `<li>${curTask}</li>  <button class = "del">Delete</button>`;
+            mainToDo.append(addedElem);
+
+            searchBar.value = "";
+            }
+
+            else if(curTask.trim() == ""){
+                alert("Can't add empty task!")
+                searchBar.value = "";
+            }
+            else{
+                alert("Task already added!")
+                searchBar.value = "";
+            }
+        })
+
+        searchBar.addEventListener("keydown", (event)=>{
+            if(event.key === "Enter"){
+                enterButton.click(); 
+            }
+        })
+
+        mainToDo.addEventListener("click", (event)=>{
+            removeToDoElem(event);
+        })
+
+        const removeToDoElem = (event) =>{
+            if(event.target.classList.contains("del")){
+            let delButton = event.target;
+            let elemToBeDeleted = delButton.previousElementSibling.innerText;
+            
+            localList = localList.filter(task => task!== elemToBeDeleted);
+            localStorage.setItem("localList", JSON.stringify(localList));
+
+            delButton.parentElement.remove();
+            }
+        }
+
+        
+        const showToDo = () =>{
+        localList.forEach(curElem => {
+            displayToDoList(curElem);
+        });
+    }
+
+    showToDo();
+    </script>
+</body>
+</html>
